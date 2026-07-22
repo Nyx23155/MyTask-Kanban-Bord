@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QIcon>
 
 #include "databasemanager.h"
 #include "taskmodel.h"
@@ -8,7 +9,10 @@
 
 int main(int argc, char *argv[])
 {
+
     QGuiApplication app(argc, argv);
+
+    app.setWindowIcon(QIcon(":/icon.svg"));
 
     QQmlApplicationEngine engine;
 

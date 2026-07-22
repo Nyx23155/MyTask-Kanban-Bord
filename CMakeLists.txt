@@ -19,7 +19,7 @@ qt_add_executable(appMyTask
     resources.qrc
     languagemanager.cpp
     languagemanager.h
-
+    app.rc
 )
 
 qt_add_qml_module(appMyTask
