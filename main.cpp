@@ -4,19 +4,23 @@
 
 #include "databasemanager.h"
 #include "taskmodel.h"
+#include "languagemanager.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
+    QQmlApplicationEngine engine;
+
+
     DatabaseManager dbManager;
     dbManager.initDatabase();
 
+    LanguageManager langManager(&engine);
+    engine.rootContext()->setContextProperty("langManager", &langManager);
+
     TaskModel taskModel;
-
-    QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("taskModel", &taskModel);
-
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

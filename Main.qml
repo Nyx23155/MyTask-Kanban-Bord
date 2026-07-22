@@ -8,18 +8,21 @@ ApplicationWindow {
     width: 1280
     height: 800
     visible: true
-    title: "MyTask — Інтерактивна система управління завданнями"
+    title: qsTr("MyTask")
     color: "#F4F5F7"
 
+    // Color palette for column accents
     property var accents: ["#0052CC", "#FF8B00", "#00875A", "#6554C0", "#DE350B", "#00B8D9"]
 
     property int ringingTaskId: -1
 
+    // Sound effect for deadline alerts and completed tasks
     SoundEffect {
         id: doneSound
         source: "qrc:/done.wav"
     }
 
+    // Listen to C++ signals from the TaskModel
     Connections {
         target: taskModel
         function onDeadlineRing(taskId, taskTitle) {
@@ -29,6 +32,7 @@ ApplicationWindow {
         }
     }
 
+    // Notification popup for expired deadlines
     Popup {
         id: alarmPopup
         width: 350
@@ -52,6 +56,7 @@ ApplicationWindow {
             hideTimer.restart()
         }
 
+        // Auto-hide the alarm popup after 6 seconds
         Timer {
             id: hideTimer
             interval: 6000
@@ -75,7 +80,7 @@ ApplicationWindow {
             ColumnLayout {
                 Layout.alignment: Qt.AlignVCenter
                 Text {
-                    text: "Час вийшов!"
+                    text: qsTr("Time's up!")
                     font.bold: true
                     color: "#DE350B"
                     font.pixelSize: 16
@@ -91,6 +96,7 @@ ApplicationWindow {
         }
     }
 
+    // Top header bar
     Rectangle {
         id: header
         anchors.top: parent.top
@@ -100,16 +106,45 @@ ApplicationWindow {
         color: "#1A1D27"
 
         Text {
+            id: headerTitle
             anchors.left: parent.left
             anchors.leftMargin: 20
             anchors.verticalCenter: parent.verticalCenter
-            text: "MyTask Board"
+            text: qsTr("MyTask Board")
             color: "white"
             font.pixelSize: 18
             font.bold: true
         }
 
-        // ── НОВЕ: Блок для відображення цитати з REST API ──
+        // App language switcher
+        ComboBox {
+            id: langSelector
+            anchors.left: headerTitle.right
+            anchors.leftMargin: 20
+            anchors.verticalCenter: parent.verticalCenter
+            width: 110
+            height: 30
+            model: ["English", "Українська", "Русский"]
+            currentIndex: 0
+            onActivated: {
+                if (currentIndex === 0) langManager.setLanguage("en")
+                else if (currentIndex === 1) langManager.setLanguage("uk_UA")
+                else if (currentIndex === 2) langManager.setLanguage("ru_RU")
+            }
+            background: Rectangle {
+                color: "#333A4D"
+                radius: 4
+            }
+            contentItem: Text {
+                text: langSelector.currentText
+                color: "white"
+                font.pixelSize: 13
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
+        }
+
+        // REST API motivation quote display
         Row {
             anchors.right: parent.right
             anchors.rightMargin: 20
@@ -150,6 +185,7 @@ ApplicationWindow {
         }
     }
 
+    // Custom Date and Time picker popup
     Popup {
         id: dateTimePopup
         width: 320
@@ -167,7 +203,7 @@ ApplicationWindow {
         }
 
         property var targetField: null
-        property var monthNames: ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"]
+        property var monthNames: [qsTr("January"), qsTr("February"), qsTr("March"), qsTr("April"), qsTr("May"), qsTr("June"), qsTr("July"), qsTr("August"), qsTr("September"), qsTr("October"), qsTr("November"), qsTr("December")]
 
         property int curMonth: new Date().getMonth()
         property int curYear: new Date().getFullYear()
@@ -211,13 +247,14 @@ ApplicationWindow {
             spacing: 10
 
             Text {
-                text: "Виберіть дату та час"
+                text: qsTr("Select date and time")
                 font.bold: true
                 font.pixelSize: 16
                 color: "#172B4D"
                 Layout.alignment: Qt.AlignHCenter
             }
 
+            // Month and Year navigation
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
                 Button {
@@ -252,11 +289,12 @@ ApplicationWindow {
                 }
             }
 
+            // Days of the week header
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
                 spacing: 14
                 Repeater {
-                    model: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"]
+                    model: [qsTr("Mon"), qsTr("Tue"), qsTr("Wed"), qsTr("Thu"), qsTr("Fri"), qsTr("Sat"), qsTr("Sun")]
                     Text {
                         text: modelData
                         font.bold: true
@@ -268,6 +306,7 @@ ApplicationWindow {
                 }
             }
 
+            // Calendar days grid
             GridLayout {
                 Layout.alignment: Qt.AlignHCenter
                 columns: 7
@@ -311,10 +350,11 @@ ApplicationWindow {
                 }
             }
 
+            // Time inputs
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.topMargin: 5
-                Text { text: "Час:"; font.bold: true; color: "#172B4D" }
+                Text { text: qsTr("Time:"); font.bold: true; color: "#172B4D" }
                 SpinBox { id: hourSpin; from: 0; to: 23; Layout.preferredWidth: 90 }
                 Text { text: ":" }
                 SpinBox { id: minSpin; from: 0; to: 59; Layout.preferredWidth: 90 }
@@ -325,12 +365,12 @@ ApplicationWindow {
             RowLayout {
                 Layout.fillWidth: true
                 Button {
-                    text: "Скасувати"
+                    text: qsTr("Cancel")
                     Layout.fillWidth: true
                     onClicked: dateTimePopup.close()
                 }
                 Button {
-                    text: "Застосувати"
+                    text: qsTr("Apply")
                     Layout.fillWidth: true
                     onClicked: dateTimePopup.applyDate()
                 }
@@ -338,6 +378,7 @@ ApplicationWindow {
         }
     }
 
+    // Popup for editing an existing task
     Popup {
         id: taskPopup
         width: 400
@@ -368,14 +409,14 @@ ApplicationWindow {
             spacing: 15
 
             Text {
-                text: "Редагування завдання"
+                text: qsTr("Edit task")
                 font.bold: true
                 font.pixelSize: 18
                 color: "#172B4D"
             }
 
             Text {
-                text: "Назва:"
+                text: qsTr("Title:")
                 font.pixelSize: 14
                 color: "#5E6C84"
             }
@@ -392,7 +433,7 @@ ApplicationWindow {
             }
 
             Text {
-                text: "Дедлайн:"
+                text: qsTr("Deadline:")
                 font.pixelSize: 14
                 color: "#5E6C84"
             }
@@ -402,7 +443,7 @@ ApplicationWindow {
                 TextField {
                     id: taskDeadlineEdit
                     Layout.fillWidth: true
-                    placeholderText: "Немає дедлайну"
+                    placeholderText: qsTr("No deadline")
                     readOnly: true
                     background: Rectangle {
                         radius: 4
@@ -425,7 +466,7 @@ ApplicationWindow {
             Item { Layout.fillHeight: true }
 
             Button {
-                text: "Зберегти"
+                text: qsTr("Save")
                 Layout.fillWidth: true
                 onClicked: {
                     if (taskTitleEdit.text.trim() !== "") {
@@ -437,6 +478,7 @@ ApplicationWindow {
         }
     }
 
+    // Main Kanban board area (horizontally scrollable)
     ScrollView {
         id: boardScroll
         anchors.top: header.bottom
@@ -448,6 +490,7 @@ ApplicationWindow {
 
         contentWidth: columnsRow.width
 
+        // Enable horizontal scrolling with mouse wheel
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.NoButton
@@ -460,13 +503,16 @@ ApplicationWindow {
             }
         }
 
+        // Row containing all columns
         Row {
             id: columnsRow
             spacing: 20
 
+            // Render each column from the model
             Repeater {
                 model: taskModel.columns
 
+                // Single column container
                 Rectangle {
                     id: colRect
                     width: 320
@@ -481,6 +527,7 @@ ApplicationWindow {
 
                     HoverHandler { id: colHover }
 
+                    // Handle drag-and-drop actions for cards
                     DropArea {
                         anchors.fill: parent
                         keys: ["taskCard"]
@@ -491,6 +538,7 @@ ApplicationWindow {
                         }
                     }
 
+                    // Top colored accent line
                     Rectangle {
                         anchors.top: parent.top
                         anchors.left: parent.left
@@ -500,6 +548,7 @@ ApplicationWindow {
                         color: accentColor
                     }
 
+                    // Column header block
                     Column {
                         id: colHeaderWrapper
                         anchors.top: parent.top
@@ -535,6 +584,7 @@ ApplicationWindow {
                         }
                     }
 
+                    // Column context menu trigger
                     Rectangle {
                         id: headerMenuBtn
                         anchors.right: parent.right
@@ -563,16 +613,17 @@ ApplicationWindow {
                             id: colMenu
                             y: 32
                             MenuItem {
-                                text: "Налаштування..."
+                                text: qsTr("Settings...")
                                 onClicked: editPopup.open()
                             }
                             MenuItem {
-                                text: "Видалити колонку"
+                                text: qsTr("Delete column")
                                 onClicked: taskModel.deleteColumn(colRect.colName)
                             }
                         }
                     }
 
+                    // Popup for column settings
                     Popup {
                         id: editPopup
                         width: 280
@@ -603,7 +654,7 @@ ApplicationWindow {
                             spacing: 12
 
                             Text {
-                                text: "Налаштування колонки"
+                                text: qsTr("Column settings")
                                 font.bold: true
                                 color: "#172B4D"
                             }
@@ -611,7 +662,7 @@ ApplicationWindow {
                             TextField {
                                 id: editNameInput
                                 width: parent.width
-                                placeholderText: "Назва колонки"
+                                placeholderText: qsTr("Column title")
                                 background: Rectangle {
                                     radius: 4
                                     border.color: "#DFE1E6"
@@ -624,7 +675,7 @@ ApplicationWindow {
                                 TextField {
                                     id: editDeadlineInput
                                     Layout.fillWidth: true
-                                    placeholderText: "Дедлайн"
+                                    placeholderText: qsTr("Deadline")
                                     readOnly: true
                                     background: Rectangle {
                                         radius: 4
@@ -665,7 +716,7 @@ ApplicationWindow {
                             }
 
                             Button {
-                                text: "Зберегти"
+                                text: qsTr("Save")
                                 width: parent.width
                                 onClicked: {
                                     if (editNameInput.text.trim() !== "") {
@@ -677,6 +728,7 @@ ApplicationWindow {
                         }
                     }
 
+                    // List of task cards within the column
                     ListView {
                         id: taskList
                         anchors.top: colHeaderWrapper.bottom
@@ -690,6 +742,7 @@ ApplicationWindow {
                         clip: true
                         model: taskModel
 
+                        // Footer: "Add new card" section
                         footer: Column {
                             width: taskList.width
                             spacing: 5
@@ -714,7 +767,7 @@ ApplicationWindow {
                                         color: "#5E6C84"
                                     }
                                     Text {
-                                        text: "Додати картку"
+                                        text: qsTr("Add card")
                                         font.pixelSize: 14
                                         color: "#5E6C84"
                                         anchors.verticalCenter: parent.verticalCenter
@@ -724,6 +777,7 @@ ApplicationWindow {
                                 TapHandler { onTapped: colRect.showAddBox = true }
                             }
 
+                            // Quick add task input box
                             Column {
                                 width: parent.width
                                 visible: colRect.showAddBox
@@ -741,7 +795,7 @@ ApplicationWindow {
                                         id: newTaskInput
                                         anchors.fill: parent
                                         anchors.margins: 5
-                                        placeholderText: "Що потрібно зробити?"
+                                        placeholderText: qsTr("What needs to be done?")
                                         wrapMode: Text.WordWrap
                                         background: Item {}
                                         Keys.onReturnPressed: (event) => {
@@ -760,7 +814,7 @@ ApplicationWindow {
                                 Row {
                                     spacing: 8
                                     Button {
-                                        text: "Додати"
+                                        text: qsTr("Add")
                                         onClicked: {
                                             if (newTaskInput.text.trim() !== "") {
                                                 taskModel.addTask(newTaskInput.text.trim(), colRect.colName)
@@ -770,7 +824,7 @@ ApplicationWindow {
                                         }
                                     }
                                     Button {
-                                        text: "Скасувати"
+                                        text: qsTr("Cancel")
                                         onClicked: {
                                             newTaskInput.text = ""
                                             colRect.showAddBox = false
@@ -780,6 +834,7 @@ ApplicationWindow {
                             }
                         }
 
+                        // Single task card visual representation
                         delegate: Item {
                             id: delegateRoot
                             width: ListView.view.width
@@ -801,6 +856,7 @@ ApplicationWindow {
 
                                 transform: Translate { id: shakeTransform }
 
+                                // Setup drag-and-drop properties
                                 Drag.active: dragMouseArea.drag.active
                                 Drag.source: delegateRoot
                                 Drag.keys: ["taskCard"]
@@ -815,6 +871,7 @@ ApplicationWindow {
                                     }
                                 ]
 
+                                // Shake animation for deadline alarm
                                 SequentialAnimation {
                                     running: delegateRoot.isRinging
                                     loops: Animation.Infinite
@@ -826,6 +883,7 @@ ApplicationWindow {
                                     PauseAnimation { duration: 800 }
                                 }
 
+                                // Red blinking border for alarm
                                 Rectangle {
                                     anchors.fill: parent
                                     radius: parent.radius
@@ -842,6 +900,7 @@ ApplicationWindow {
                                     }
                                 }
 
+                                // Drag-and-drop logic for the task card
                                 MouseArea {
                                     id: dragMouseArea
                                     anchors.fill: parent
@@ -907,6 +966,7 @@ ApplicationWindow {
                                         }
                                     }
 
+                                    // Delete card button
                                     Rectangle {
                                         Layout.alignment: Qt.AlignTop
                                         Layout.preferredWidth: 24
@@ -932,6 +992,7 @@ ApplicationWindow {
                 }
             }
 
+            // "Add new column" block at the end of the board
             Rectangle {
                 width: 320
                 height: 50
@@ -947,7 +1008,7 @@ ApplicationWindow {
                     TextField {
                         id: newColInput
                         Layout.fillWidth: true
-                        placeholderText: "Нова колонка..."
+                        placeholderText: qsTr("New column...")
                         background: Item {}
                         Keys.onReturnPressed: (event) => {
                             if (text.trim() !== "") {

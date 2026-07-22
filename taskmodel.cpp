@@ -1,16 +1,14 @@
 #include "taskmodel.h"
-#include <QJsonArray> // Обов'язкова бібліотека для нового API
+#include <QJsonArray>
 
 TaskModel::TaskModel(QObject *parent) : QAbstractListModel(parent) {
     m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, &TaskModel::checkDeadlines);
     m_timer->start(30000);
 
-    // Ініціалізація менеджера мережі
     m_networkManager = new QNetworkAccessManager(this);
     m_motivationQuote = "Завантаження натхнення...";
-    fetchMotivation(); // Одразу робимо запит при запуску
-
+    fetchMotivation();
     loadTasks();
 }
 

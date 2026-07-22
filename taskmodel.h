@@ -11,7 +11,6 @@
 #include <QDateTime>
 #include <QSet>
 
-// Додаємо бібліотеки для REST API
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QJsonDocument>
@@ -22,7 +21,6 @@ class TaskModel : public QAbstractListModel {
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QVariantList columns READ columns NOTIFY columnsChanged)
 
-    // Нова властивість для збереження цитати з API
     Q_PROPERTY(QString motivationQuote READ motivationQuote NOTIFY motivationQuoteChanged)
 
 public:
@@ -49,7 +47,6 @@ public:
     Q_INVOKABLE void deleteTask(int taskId);
     Q_INVOKABLE void updateTaskDetails(int taskId, const QString &newTitle, const QString &newDeadline);
 
-    // Метод для виклику REST API
     Q_INVOKABLE void fetchMotivation();
 
 signals:
@@ -75,9 +72,8 @@ private:
     QTimer *m_timer;
     QSet<int> m_notifiedTaskIds;
 
-    // Змінні для роботи з API
     QString m_motivationQuote;
     QNetworkAccessManager *m_networkManager;
 };
 
-#endif // TASKMODEL_H
+#endif
